@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"go-clean-architecture/util/gormloader"
 
-	// user domain
+	// User domain
 	UserRepoForSQLGorm "go-clean-architecture/domain/user/repository/gorm"
 	UserUsecase "go-clean-architecture/domain/user/usecase"
 
+	// Delivery over HTTP
 	UserHttp "go-clean-architecture/domain/user/delivery/http"
 
 	"log"
