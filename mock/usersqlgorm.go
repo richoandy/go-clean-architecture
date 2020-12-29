@@ -11,18 +11,18 @@ import (
 type UserRepoMock struct{}
 
 // UserData for mocking
-var UserData = user.Model{
+var UserData = user.User{
 	ID:       1,
 	Email:    "test@email.com",
 	Password: "testpassword",
 }
 
 // Create => mock function
-func (m UserRepoMock) Create(trx *gorm.DB, payload user.Model) (user.Model, error) {
+func (m UserRepoMock) Create(trx *gorm.DB, payload user.User) (user.User, error) {
 	return UserData, nil
 }
 
 // List => mock function
-func (m UserRepoMock) List(trx *gorm.DB, query application.Query) ([]user.Model, error) {
-	return []user.Model{UserData}, nil
+func (m UserRepoMock) List(trx *gorm.DB, query application.Query) ([]user.User, error) {
+	return []user.User{UserData}, nil
 }

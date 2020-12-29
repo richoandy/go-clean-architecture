@@ -21,7 +21,7 @@ Methods for User Usecase
 usecases don't interact directly with libraries / 3rd party dependencies
 */
 
-func (u usecaseHandler) List(ac application.CustomContextInterface, query application.Query) ([]user.Model, error) {
+func (u usecaseHandler) List(ac application.CustomContextInterface, query application.Query) ([]user.User, error) {
 	trx := ac.TrxStart()
 
 	result, error := u.UserRepo.List(trx, query)
@@ -34,7 +34,7 @@ func (u usecaseHandler) List(ac application.CustomContextInterface, query applic
 	return result, nil
 }
 
-func (u usecaseHandler) Create(ac application.CustomContextInterface, payload user.Model) (user.Model, error) {
+func (u usecaseHandler) Create(ac application.CustomContextInterface, payload user.User) (user.User, error) {
 	trx := ac.TrxStart()
 
 	result, error := u.UserRepo.Create(trx, payload)

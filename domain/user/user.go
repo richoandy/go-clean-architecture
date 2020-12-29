@@ -6,8 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Model => user domain struct
-type Model struct {
+// User => user domain struct
+type User struct {
 	ID       int64  `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -15,12 +15,12 @@ type Model struct {
 
 // UsecaseInterface ...
 type UsecaseInterface interface {
-	List(ac app.CustomContextInterface, query app.Query) ([]Model, error)
-	Create(ac app.CustomContextInterface, payload Model) (Model, error)
+	List(ac app.CustomContextInterface, query app.Query) ([]User, error)
+	Create(ac app.CustomContextInterface, payload User) (User, error)
 }
 
 // RepoInterface ...
 type RepoInterface interface {
-	List(trx *gorm.DB, query app.Query) ([]Model, error)
-	Create(trx *gorm.DB, payload Model) (Model, error)
+	List(trx *gorm.DB, query app.Query) ([]User, error)
+	Create(trx *gorm.DB, payload User) (User, error)
 }

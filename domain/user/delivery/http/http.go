@@ -3,6 +3,7 @@ package http
 import (
 	"go-clean-architecture/domain/user"
 	app "go-clean-architecture/util/application"
+
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -50,7 +51,7 @@ func (h httpHandler) create(c echo.Context) error {
 		Db: h.Db,
 	}
 
-	payload := user.Model{}
+	payload := user.User{}
 	err := c.Bind(&payload)
 	if err != nil {
 		return app.JSONResponse(c, http.StatusUnprocessableEntity, "failed to bind payload", payload)

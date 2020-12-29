@@ -26,7 +26,7 @@ func TestList(t *testing.T) {
 		t.Errorf("error is not expected")
 	}
 
-	if !reflect.DeepEqual(result, []user.Model{mock.UserData}) {
+	if !reflect.DeepEqual(result, []user.User{mock.UserData}) {
 		t.Errorf("List is not returning correct data")
 	}
 }
