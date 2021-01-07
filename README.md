@@ -1,7 +1,7 @@
 # Go-Clean-Architecture #
 ## Very simple demonstration on Clean Architecture for Go Lang: ##
 - reduce the pointers usage to reduce complexity
-- slim repository, fat usecase
+- slim repository, slim delivery, fat usecase
 - usecase should not interact with any 3rd party library dependencies
 - "only test code that I write"
 
