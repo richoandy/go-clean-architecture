@@ -1,4 +1,4 @@
-package mock
+package test
 
 import (
 	"go-clean-architecture/domain/user"
@@ -11,7 +11,7 @@ import (
 type UserRepoMock struct{}
 
 // UserData for mocking
-var UserData = user.User{
+var UserDataMock = user.User{
 	ID:       1,
 	Email:    "test@email.com",
 	Password: "testpassword",
@@ -19,10 +19,10 @@ var UserData = user.User{
 
 // Create => mock function
 func (m UserRepoMock) Create(trx *gorm.DB, payload user.User) (user.User, error) {
-	return UserData, nil
+	return UserDataMock, nil
 }
 
 // List => mock function
 func (m UserRepoMock) List(trx *gorm.DB, query application.Query) ([]user.User, error) {
-	return []user.User{UserData}, nil
+	return []user.User{UserDataMock}, nil
 }

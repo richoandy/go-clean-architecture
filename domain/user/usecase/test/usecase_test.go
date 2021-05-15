@@ -1,7 +1,8 @@
-package usecase
+package test
 
 import (
 	"go-clean-architecture/domain/user"
+	"go-clean-architecture/domain/user/usecase"
 	"go-clean-architecture/mock"
 	"go-clean-architecture/util/application"
 	"reflect"
@@ -9,9 +10,9 @@ import (
 )
 
 // duck type
-var userRepoMock = mock.UserRepoMock{}
-var userUsecase = New(userRepoMock)
-var acMock = mock.AcMock{}
+var userRepoMock = UserRepoMock{}
+var userUsecase = usecase.New(userRepoMock)
+var acMock = mock.TrxMock{}
 
 func TestNew(t *testing.T) {
 	if userUsecase == nil {
@@ -26,19 +27,19 @@ func TestList(t *testing.T) {
 		t.Errorf("error is not expected")
 	}
 
-	if !reflect.DeepEqual(result, []user.User{mock.UserData}) {
+	if !reflect.DeepEqual(result, []user.User{UserDataMock}) {
 		t.Errorf("List is not returning correct data")
 	}
 }
 
 func TestCreate(t *testing.T) {
-	result, err := userUsecase.Create(acMock, mock.UserData)
+	result, err := userUsecase.Create(acMock, UserDataMock)
 
 	if err != nil {
 		t.Errorf("error is not expected")
 	}
 
-	if !reflect.DeepEqual(result, mock.UserData) {
+	if !reflect.DeepEqual(result, UserDataMock) {
 		t.Errorf("Create is not returning correct data")
 	}
 }

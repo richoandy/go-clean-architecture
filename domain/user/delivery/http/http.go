@@ -2,6 +2,7 @@ package http
 
 import (
 	"go-clean-architecture/domain/user"
+	"go-clean-architecture/util"
 	app "go-clean-architecture/util/application"
 
 	"net/http"
@@ -27,40 +28,53 @@ func AddHandler(e *echo.Echo, db *gorm.DB, usecase user.UsecaseInterface) {
 }
 
 func (h httpHandler) list(c echo.Context) error {
-	ac := app.CustomContext{
+	trx := util.TrxManager{
 		Db: h.Db,
 	}
 
-	from := c.QueryParam("from")
-	to := c.QueryParam("to")
-	query := app.Query{
-		From: from,
-		To:   to,
+	query := c.QueryParam("query")
+	queryCtx := app.Query{
+		Query: query,
 	}
 
-	res, err := h.Usecase.List(ac, query)
+	res, err := h.Usecase.List(trx, queryCtx)
 	if err != nil {
-		return app.JSONResponse(c, http.StatusInternalServerError, "internal server error", nil)
+		return app.JsonResponse(
+			c,
+			http.StatusInternalServerError,
+			"internal server error",
+			nil,
+		)
 	}
 
-	return app.JSONResponse(c, http.StatusOK, "ok", res)
+	return app.JsonResponse(c, http.StatusOK, "ok", res)
 }
 
 func (h httpHandler) create(c echo.Context) error {
-	ac := app.CustomContext{
+	trx := util.TrxManager{
 		Db: h.Db,
 	}
 
 	payload := user.User{}
 	err := c.Bind(&payload)
 	if err != nil {
-		return app.JSONResponse(c, http.StatusUnprocessableEntity, "failed to bind payload", payload)
+		return app.JsonResponse(
+			c,
+			http.StatusUnprocessableEntity,
+			"failed to bind payload",
+			payload,
+		)
 	}
 
-	res, err := h.Usecase.Create(ac, payload)
+	res, err := h.Usecase.Create(trx, payload)
 	if err != nil {
-		return app.JSONResponse(c, http.StatusInternalServerError, "internal server error", payload)
+		return app.JsonResponse(
+			c,
+			http.StatusInternalServerError,
+			"internal server error",
+			payload,
+		)
 	}
 
-	return app.JSONResponse(c, http.StatusOK, "ok", res)
+	return app.JsonResponse(c, http.StatusOK, "ok", res)
 }

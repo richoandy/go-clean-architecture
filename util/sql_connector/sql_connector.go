@@ -1,15 +1,15 @@
-package gormloader
+package sql_connector
 
 import (
 	"log"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"github.com/jinzhu/gorm"                  // use GORM as ORM
 	_ "github.com/jinzhu/gorm/dialects/mysql" //dialect for mysql
 )
 
 // OpenConnection => open connection to mysql db
-func OpenConnection(mysqlURI string) (*gorm.DB, error) {
+func OpenSqlConnection(mysqlURI string) (*gorm.DB, error) {
 	log.Print("starting GORM mysql connection ...")
 
 	db, err := gorm.Open("mysql", mysqlURI)

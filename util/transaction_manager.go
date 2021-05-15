@@ -1,40 +1,40 @@
-package application
+package util
 
 import (
 	"github.com/jinzhu/gorm"
 )
 
 // CustomContext => struct usecase
-type CustomContext struct {
+type TrxManager struct {
 	Db *gorm.DB
 }
 
 // CustomContextInterface ...
-type CustomContextInterface interface {
-	TrxStart() *gorm.DB
-	TrxCommit(trx *gorm.DB)
-	TrxRollback(trx *gorm.DB)
+type ITrxManager interface {
+	Begin() *gorm.DB
+	Commit(trx *gorm.DB)
+	Rollback(trx *gorm.DB)
 }
 
 // New => initialize application context
-func New(db *gorm.DB) CustomContextInterface {
-	return CustomContext{
+func New(db *gorm.DB) ITrxManager {
+	return TrxManager{
 		Db: db,
 	}
 }
 
 // TrxStart => abstract transaction begin action for GORM ORM
-func (cc CustomContext) TrxStart() *gorm.DB {
-	trx := cc.Db.Begin()
+func (trxManager TrxManager) Begin() *gorm.DB {
+	trx := trxManager.Db.Begin()
 	return trx
 }
 
 // TrxCommit => abstract transaction commit action for GORM ORM
-func (cc CustomContext) TrxCommit(trx *gorm.DB) {
+func (trxManager TrxManager) Commit(trx *gorm.DB) {
 	trx.Commit()
 }
 
 // TrxRollback => abstract transaction rollback action for GORM ORM
-func (cc CustomContext) TrxRollback(trx *gorm.DB) {
+func (trxManager TrxManager) Rollback(trx *gorm.DB) {
 	trx.Rollback()
 }

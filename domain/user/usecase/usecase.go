@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"go-clean-architecture/domain/user"
+	"go-clean-architecture/util"
 	"go-clean-architecture/util/application"
 )
 
@@ -21,28 +22,28 @@ Methods for User Usecase
 usecases don't interact directly with libraries / 3rd party dependencies
 */
 
-func (u usecaseHandler) List(ac application.CustomContextInterface, query application.Query) ([]user.User, error) {
-	trx := ac.TrxStart()
+func (u usecaseHandler) List(trxMgr util.ITrxManager, query application.Query) ([]user.User, error) {
+	trx := trxMgr.Begin()
 
 	result, error := u.UserRepo.List(trx, query)
 	if error != nil {
-		ac.TrxRollback(trx)
+		trxMgr.Rollback(trx)
 		return nil, error
 	}
 
-	ac.TrxCommit(trx)
+	trxMgr.Commit(trx)
 	return result, nil
 }
 
-func (u usecaseHandler) Create(ac application.CustomContextInterface, payload user.User) (user.User, error) {
-	trx := ac.TrxStart()
+func (u usecaseHandler) Create(trxMgr util.ITrxManager, payload user.User) (user.User, error) {
+	trx := trxMgr.Begin()
 
 	result, error := u.UserRepo.Create(trx, payload)
 	if error != nil {
-		ac.TrxRollback(trx)
+		trxMgr.Rollback(trx)
 		return payload, error
 	}
 
-	ac.TrxCommit(trx)
+	trxMgr.Commit(trx)
 	return result, nil
 }

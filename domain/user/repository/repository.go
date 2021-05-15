@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"fmt"
 	"go-clean-architecture/domain/user"
 	"go-clean-architecture/util/application"
 
@@ -25,7 +26,11 @@ don't handle error or do conditional here => usecase's responsibility
 
 func (r repoHandler) List(trx *gorm.DB, query application.Query) ([]user.User, error) {
 	payload := []user.User{}
-	res := trx.Find(&payload)
+
+	searchQuery := fmt.Sprintf("%%%s%%", query.Query)
+	fmt.Print(searchQuery)
+
+	res := trx.Where("email LIKE ?", searchQuery).Find(&payload)
 	return payload, res.Error
 }
 

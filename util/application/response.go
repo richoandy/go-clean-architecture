@@ -10,7 +10,7 @@ type Response struct {
 }
 
 // JSONResponse => wrapper for JSON repsonse
-func JSONResponse(c echo.Context, status int, message string, data interface{}) error {
+func JsonResponse(c echo.Context, status int, message string, data interface{}) error {
 	return c.JSON(status, Response{
 		Status:  status,
 		Message: message,

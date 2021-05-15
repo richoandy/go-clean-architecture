@@ -8,12 +8,10 @@ import (
 
 	// User domain
 	"go-clean-architecture/domain/user"
-	UserRepoForSQLGorm "go-clean-architecture/domain/user/repository/gorm"
+	UserRepo "go-clean-architecture/domain/user/repository"
 	UserUsecase "go-clean-architecture/domain/user/usecase"
 
-	"go-clean-architecture/util/application"
-	app "go-clean-architecture/util/application"
-	"go-clean-architecture/util/gormloader"
+	"go-clean-architecture/util"
 
 	"github.com/joho/godotenv"
 )
@@ -26,17 +24,17 @@ func main() {
 	}
 
 	// initialize mysql connection with GORM ORM
-	mysqlSession, err := gormloader.OpenConnection(os.Getenv("MYSQL_URI"))
+	mysqlSession, err := util.OpenSqlConnection(os.Getenv("MYSQL_URI"))
 	if err != nil {
 		log.Print(err)
 		panic("failed to initialize connection to mysql database")
 	}
 
 	// user domain
-	userRepoForSQLGorm := UserRepoForSQLGorm.New(mysqlSession)
+	userRepoForSQLGorm := UserRepo.New(mysqlSession)
 	userUsecase := UserUsecase.New(userRepoForSQLGorm)
 
-	ac := app.CustomContext{
+	trxManager := util.TrxManager{
 		Db: mysqlSession,
 	}
 
@@ -55,7 +53,7 @@ func main() {
 
 	workerNumber := 10
 	for i := 0; i < workerNumber; i++ {
-		go createUserWorker(userUsecase, ac, jobs, results)
+		go createUserWorker(userUsecase, trxManager, jobs, results)
 	}
 
 	for i, data := range csvData {
@@ -77,9 +75,9 @@ func main() {
 	}
 }
 
-func createUserWorker(usecase user.UsecaseInterface, ac application.CustomContextInterface, jobs <-chan user.User, results chan<- user.User) {
+func createUserWorker(usecase user.UsecaseInterface, trxManager util.ITrxManager, jobs <-chan user.User, results chan<- user.User) {
 	for job := range jobs {
-		result, _ := usecase.Create(ac, job)
+		result, _ := usecase.Create(trxManager, job)
 		results <- result
 	}
 }

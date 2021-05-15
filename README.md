@@ -17,4 +17,4 @@
 - `PORT=1323`
 2. create database in mysql named `go-clean-architecture`
 3. create table named `users` with field id `integer`, email `string`, password `string`
-4. command to run: `go run app/main.go`
+4. command to run: `go run main.go`
