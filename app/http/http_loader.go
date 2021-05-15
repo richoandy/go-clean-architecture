@@ -1,6 +1,8 @@
 package http
 
 import (
+	TransactionManager "go-clean-architecture/util/transaction_manager"
+
 	// User
 	UserHttp "go-clean-architecture/domain/user/delivery/http"
 	UserRepo "go-clean-architecture/domain/user/repository"
@@ -11,24 +13,27 @@ import (
 )
 
 type HttpLoader struct {
-	db     *gorm.DB
 	router *echo.Echo
+	db     *gorm.DB
 }
 
 type IHttpLoader interface {
 	Load()
 }
 
-func New(sqlSession *gorm.DB, echo *echo.Echo) IHttpLoader {
+func New(echo *echo.Echo, sqlSession *gorm.DB) IHttpLoader {
 	return HttpLoader{
-		db:     sqlSession,
 		router: echo,
+		db:     sqlSession,
 	}
 }
 
 func (httpLoader HttpLoader) Load() {
+	trxManager := TransactionManager.New(httpLoader.db)
+
 	// user domain
 	userRepo := UserRepo.New(httpLoader.db)
-	userUsecase := UserUsecase.New(userRepo)
-	UserHttp.AddHandler(httpLoader.router, httpLoader.db, userUsecase)
+	userUsecase := UserUsecase.New(trxManager, userRepo)
+
+	UserHttp.AddHandler(httpLoader.router, userUsecase)
 }

@@ -9,13 +9,14 @@ import (
 )
 
 // OpenConnection => open connection to mysql db
-func OpenSqlConnection(mysqlURI string) (*gorm.DB, error) {
+func OpenConnection(mysqlUri string) *gorm.DB {
 	log.Print("starting GORM mysql connection ...")
 
-	db, err := gorm.Open("mysql", mysqlURI)
+	db, err := gorm.Open("mysql", mysqlUri)
 
 	if err != nil {
-		return nil, err
+		log.Print(err)
+		panic("failed to initialize connection to mysql database")
 	}
 
 	db.DB().SetMaxIdleConns(32)
@@ -23,5 +24,5 @@ func OpenSqlConnection(mysqlURI string) (*gorm.DB, error) {
 	db.DB().SetConnMaxLifetime(30 * time.Second)
 	db.LogMode(true)
 
-	return db, nil
+	return db
 }

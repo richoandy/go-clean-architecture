@@ -10,9 +10,9 @@ import (
 )
 
 // duck type
+var trxMock = mock.TrxMock{}
 var userRepoMock = UserRepoMock{}
-var userUsecase = usecase.New(userRepoMock)
-var acMock = mock.TrxMock{}
+var userUsecase = usecase.New(trxMock, userRepoMock)
 
 func TestNew(t *testing.T) {
 	if userUsecase == nil {
@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	result, err := userUsecase.List(acMock, application.Query{})
+	result, err := userUsecase.List(application.Query{})
 
 	if err != nil {
 		t.Errorf("error is not expected")
@@ -33,7 +33,7 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	result, err := userUsecase.Create(acMock, UserDataMock)
+	result, err := userUsecase.Create(UserDataMock)
 
 	if err != nil {
 		t.Errorf("error is not expected")

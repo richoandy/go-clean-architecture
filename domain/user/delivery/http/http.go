@@ -2,25 +2,21 @@ package http
 
 import (
 	"go-clean-architecture/domain/user"
-	"go-clean-architecture/util"
 	app "go-clean-architecture/util/application"
 
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
 type httpHandler struct {
 	Usecase user.UsecaseInterface
-	Db      *gorm.DB
 }
 
 // AddHandler => handler
-func AddHandler(e *echo.Echo, db *gorm.DB, usecase user.UsecaseInterface) {
+func AddHandler(e *echo.Echo, usecase user.UsecaseInterface) {
 	userHandler := httpHandler{
 		Usecase: usecase,
-		Db:      db,
 	}
 
 	e.GET("/api/users", userHandler.list)
@@ -28,16 +24,12 @@ func AddHandler(e *echo.Echo, db *gorm.DB, usecase user.UsecaseInterface) {
 }
 
 func (h httpHandler) list(c echo.Context) error {
-	trx := util.TrxManager{
-		Db: h.Db,
-	}
-
 	query := c.QueryParam("query")
 	queryCtx := app.Query{
 		Query: query,
 	}
 
-	res, err := h.Usecase.List(trx, queryCtx)
+	res, err := h.Usecase.List(queryCtx)
 	if err != nil {
 		return app.JsonResponse(
 			c,
@@ -51,10 +43,6 @@ func (h httpHandler) list(c echo.Context) error {
 }
 
 func (h httpHandler) create(c echo.Context) error {
-	trx := util.TrxManager{
-		Db: h.Db,
-	}
-
 	payload := user.User{}
 	err := c.Bind(&payload)
 	if err != nil {
@@ -66,7 +54,7 @@ func (h httpHandler) create(c echo.Context) error {
 		)
 	}
 
-	res, err := h.Usecase.Create(trx, payload)
+	res, err := h.Usecase.Create(payload)
 	if err != nil {
 		return app.JsonResponse(
 			c,

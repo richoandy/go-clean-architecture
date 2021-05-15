@@ -1,11 +1,11 @@
-package util
+package transaction_manager
 
 import (
 	"github.com/jinzhu/gorm"
 )
 
 // CustomContext => struct usecase
-type TrxManager struct {
+type trxManager struct {
 	Db *gorm.DB
 }
 
@@ -18,23 +18,23 @@ type ITrxManager interface {
 
 // New => initialize application context
 func New(db *gorm.DB) ITrxManager {
-	return TrxManager{
+	return trxManager{
 		Db: db,
 	}
 }
 
 // TrxStart => abstract transaction begin action for GORM ORM
-func (trxManager TrxManager) Begin() *gorm.DB {
-	trx := trxManager.Db.Begin()
+func (trxMgr trxManager) Begin() *gorm.DB {
+	trx := trxMgr.Db.Begin()
 	return trx
 }
 
 // TrxCommit => abstract transaction commit action for GORM ORM
-func (trxManager TrxManager) Commit(trx *gorm.DB) {
+func (trxMgr trxManager) Commit(trx *gorm.DB) {
 	trx.Commit()
 }
 
 // TrxRollback => abstract transaction rollback action for GORM ORM
-func (trxManager TrxManager) Rollback(trx *gorm.DB) {
+func (trxMgr trxManager) Rollback(trx *gorm.DB) {
 	trx.Rollback()
 }

@@ -2,18 +2,20 @@ package usecase
 
 import (
 	"go-clean-architecture/domain/user"
-	"go-clean-architecture/util"
 	"go-clean-architecture/util/application"
+	TransactionManager "go-clean-architecture/util/transaction_manager"
 )
 
 type usecaseHandler struct {
-	UserRepo user.RepoInterface
+	UserRepo   user.RepoInterface
+	TrxManager TransactionManager.ITrxManager
 }
 
 // New => initialize User Usecase
-func New(userRepo user.RepoInterface) user.UsecaseInterface {
+func New(trxManager TransactionManager.ITrxManager, userRepo user.RepoInterface) user.UsecaseInterface {
 	return usecaseHandler{
-		UserRepo: userRepo,
+		UserRepo:   userRepo,
+		TrxManager: trxManager,
 	}
 }
 
@@ -22,28 +24,28 @@ Methods for User Usecase
 usecases don't interact directly with libraries / 3rd party dependencies
 */
 
-func (u usecaseHandler) List(trxMgr util.ITrxManager, query application.Query) ([]user.User, error) {
-	trx := trxMgr.Begin()
+func (uc usecaseHandler) List(query application.Query) ([]user.User, error) {
+	trx := uc.TrxManager.Begin()
 
-	result, error := u.UserRepo.List(trx, query)
+	result, error := uc.UserRepo.List(trx, query)
 	if error != nil {
-		trxMgr.Rollback(trx)
+		uc.TrxManager.Rollback(trx)
 		return nil, error
 	}
 
-	trxMgr.Commit(trx)
+	uc.TrxManager.Commit(trx)
 	return result, nil
 }
 
-func (u usecaseHandler) Create(trxMgr util.ITrxManager, payload user.User) (user.User, error) {
-	trx := trxMgr.Begin()
+func (uc usecaseHandler) Create(payload user.User) (user.User, error) {
+	trx := uc.TrxManager.Begin()
 
-	result, error := u.UserRepo.Create(trx, payload)
+	result, error := uc.UserRepo.Create(trx, payload)
 	if error != nil {
-		trxMgr.Rollback(trx)
+		uc.TrxManager.Rollback(trx)
 		return payload, error
 	}
 
-	trxMgr.Commit(trx)
+	uc.TrxManager.Commit(trx)
 	return result, nil
 }

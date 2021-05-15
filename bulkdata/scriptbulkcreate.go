@@ -11,7 +11,8 @@ import (
 	UserRepo "go-clean-architecture/domain/user/repository"
 	UserUsecase "go-clean-architecture/domain/user/usecase"
 
-	"go-clean-architecture/util"
+	SqlConnector "go-clean-architecture/util/sql_connector"
+	TransactionManager "go-clean-architecture/util/transaction_manager"
 
 	"github.com/joho/godotenv"
 )
@@ -23,20 +24,13 @@ func main() {
 		panic("Error loading .env file")
 	}
 
-	// initialize mysql connection with GORM ORM
-	mysqlSession, err := util.OpenSqlConnection(os.Getenv("MYSQL_URI"))
-	if err != nil {
-		log.Print(err)
-		panic("failed to initialize connection to mysql database")
-	}
+	// initialize mysql connection
+	mysqlSession := SqlConnector.OpenConnection(os.Getenv("MYSQL_URI"))
+	trxManager := TransactionManager.New(mysqlSession)
 
 	// user domain
-	userRepoForSQLGorm := UserRepo.New(mysqlSession)
-	userUsecase := UserUsecase.New(userRepoForSQLGorm)
-
-	trxManager := util.TrxManager{
-		Db: mysqlSession,
-	}
+	userRepoGorm := UserRepo.New(mysqlSession)
+	userUsecase := UserUsecase.New(trxManager, userRepoGorm)
 
 	csvFile, err := os.Open("bulkdata/users.csv")
 	if err != nil {
@@ -75,9 +69,9 @@ func main() {
 	}
 }
 
-func createUserWorker(usecase user.UsecaseInterface, trxManager util.ITrxManager, jobs <-chan user.User, results chan<- user.User) {
+func createUserWorker(usecase user.UsecaseInterface, trxManager TransactionManager.ITrxManager, jobs <-chan user.User, results chan<- user.User) {
 	for job := range jobs {
-		result, _ := usecase.Create(trxManager, job)
+		result, _ := usecase.Create(job)
 		results <- result
 	}
 }

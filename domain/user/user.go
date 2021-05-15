@@ -1,7 +1,6 @@
 package user
 
 import (
-	"go-clean-architecture/util"
 	app "go-clean-architecture/util/application"
 
 	"github.com/jinzhu/gorm"
@@ -16,8 +15,8 @@ type User struct {
 
 // UsecaseInterface ...
 type UsecaseInterface interface {
-	List(trx util.ITrxManager, query app.Query) ([]User, error)
-	Create(trx util.ITrxManager, payload User) (User, error)
+	List(query app.Query) ([]User, error)
+	Create(payload User) (User, error)
 }
 
 // RepoInterface ...
